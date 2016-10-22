@@ -32,10 +32,16 @@ optional arguments:
 https://www.microsoft.com/cognitive-services/en-us/computer-vision-api
 2. Python 3
 3. Libraries:
-	# libxmp
-	# argparse
-	# PIL
-	# Standard libraries: json, sys, http, urrlib, base64, io
+	* libxmp
+	* argparse
+	* PIL
+	* Standard libraries:
+		* json 
+		* sys
+		* http
+		* urrlib
+		* base64
+		* io
 
 ##Features
 * Saves bandwidth when upload to Azure by sending a smaller image
