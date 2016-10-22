@@ -97,3 +97,5 @@ ENV/
 *.tiff
 *.bmp
 
+# Directory file
+.directory
