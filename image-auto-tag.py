@@ -32,7 +32,7 @@ def check_width(value):
 
 # Function to check confidence level input
 def check_confidence(value):    
-    ivalue = ﬂoat(value)
+    ivalue = float(value)
     if (ivalue < 0):
         raise argparse.ArgumentTypeError("%s is an invalid confidence score - must be greater than zero" % value)
     if (ivalue > 1.0):
@@ -44,7 +44,7 @@ parser = argparse.ArgumentParser(description='Add XMP metadata based on Microsof
 parser.add_argument('--key', nargs='?',required=True, help='Azure Computer Vision API key')
 parser.add_argument('--captionConfidenceLevel', help='Confidence level for adding caption)',type=check_confidence, default=0.1)
 parser.add_argument('--tagConfidenceLevel', help='Confidence level for adding tags',type=check_confidence, default=0.1)
-parser.add_argument('--categoryConfidenceLevel', help='Confidence level for adding category',type=check_confidence, default=0.1)
+parser.add_argument('--categoryConfidenceLevel', help='Confidence level for adding category',type=check_confidence, default=0.0)
 parser.add_argument('--azureResizeWidth', required=False, help='Temporarily resize to <azureResizeWidth> before uploading to Azure', type=check_width, default=800)
 parser.add_argument('inputFiles', help='Input file list', type=argparse.FileType('rb'), nargs='+')
 args = parser.parse_args()
@@ -55,9 +55,6 @@ p_caption_confidence_level=args.captionConfidenceLevel;
 p_category_confidence_level=args.categoryConfidenceLevel;
 p_azure_resize_width=args.azureResizeWidth;
 v_tags=[]
-
-# Add digikam namespace for writing tag metadata
-XMPMeta.register_namespace("http://www.digikam.org/ns/1.0/", "digiKam");
 
 # Process input files
 for v_idx, v_input_file in enumerate(args.inputFiles):   
@@ -107,6 +104,7 @@ for v_idx, v_input_file in enumerate(args.inputFiles):
     # Decode the JSON output
     v_json_result=json.loads(response_data.decode("utf-8"))
 
+    # Get existing image XMP data
     xmpfile = XMPFiles( file_path=v_input_file.name, open_forupdate=True )
     xmp = xmpfile.get_xmp()
     
@@ -117,14 +115,12 @@ for v_idx, v_input_file in enumerate(args.inputFiles):
         eprint("INFO: [%s] Appended caption '%s' (confidence: %.2f >= %.2f)" % (v_input_file.name,v_json_result['description']['captions'][0]['text'], v_json_result['description']['captions'][0]['confidence'],p_caption_confidence_level))
     
     # Set category if response is above desired confidence level
-    if v_json_result['categories'][0]['score'] >= p_category_confidence_level:
-        xmp.delete_property('http://www.digikam.org/ns/1.0/', u'TagsList')   
-        xmp.set_property('http://www.digikam.org/ns/1.0/', u'TagsList', v_json_result['categories'][0]['name'])
+    for v_category in v_json_result['categories']:
+        if v_category['score'] >= p_category_confidence_level:            
+            if not xmp.does_array_item_exist(consts.XMP_NS_Photoshop, u'SupplementalCategories', v_category['name']):
+                xmp.append_array_item(consts.XMP_NS_Photoshop, u'SupplementalCategories', v_category['name'],{'prop_array_is_ordered': True, 'prop_value_is_array': True})
+                eprint("INFO: [%s] Appended category '%s' (confidence: %.2f >= %.2f)" % (v_input_file.name,v_category['name'], v_category['score'],p_category_confidence_level))
         
-        xmp.delete_property(consts.XMP_NS_Photoshop, u'SupplementalCategories')   
-        xmp.set_property(consts.XMP_NS_Photoshop, u'SupplementalCategories', v_json_result['categories'][0]['name'])
-        eprint("INFO: [%s] Appended category '%s' (confidence: %.2f >= %.2f)" % (v_input_file.name,v_json_result['categories'][0]['name'], v_json_result['categories'][0]['score'],p_category_confidence_level))
-    
     # Add tags if response for a given is above desired confidence level
     for v_tag in v_json_result['tags']:
         if (v_tag['confidence']>=p_tag_confidence_level):
@@ -142,7 +138,4 @@ for v_idx, v_input_file in enumerate(args.inputFiles):
 
     # Clear tags
     v_tags=[]
-
-####################################
-
 
