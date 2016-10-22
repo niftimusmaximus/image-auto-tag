@@ -2,6 +2,7 @@
 Automatically tag, describe and categorise images using the Microsoft(R) Azure(R) Computer Vision API.
 
 ##Usage
+~~~~
 usage: image-auto-tag.py [-h] --key [KEY]
                          [--captionConfidenceLevel CAPTIONCONFIDENCELEVEL]
                          [--tagConfidenceLevel TAGCONFIDENCELEVEL]
@@ -26,6 +27,7 @@ optional arguments:
   --azureResizeWidth AZURERESIZEWIDTH
                         Temporarily resize to <azureResizeWidth> before
                         uploading to Azure (default: 800)
+~~~~
 
 ##Prerequisites
 1. Azure Computer Vision API Key (proprietary, subscription-based):
