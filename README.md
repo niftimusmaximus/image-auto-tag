@@ -1,33 +1,47 @@
 # image-auto-tag
 Automatically tag, describe and categorise images using the Microsoft(R) Azure(R) Computer Vision API.
 
+
+##Quickstart
+~~~~
+sudo su -
+pip3 install python-xmp-toolkit
+pip3 install argparse
+pip3 install Pillow
+exit
+
+git clone https://github.com/niftimusmaximus/image-auto-tag
+cd image-auto-tag.py
+./image-auto-tag.py --key XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX image.jpg
+
+~~~~
+
 ##Usage
-~~~~
-usage: image-auto-tag.py [-h] --key [KEY]
-                         [--captionConfidenceLevel CAPTIONCONFIDENCELEVEL]
-                         [--tagConfidenceLevel TAGCONFIDENCELEVEL]
-                         [--categoryConfidenceLevel CATEGORYCONFIDENCELEVEL]
-                         [--azureResizeWidth AZURERESIZEWIDTH]
-                         inputFiles [inputFiles ...]
 
-Add XMP metadata based on Microsoft® Azure® Computer Vision API.
+    usage: image-auto-tag.py [-h] --key [KEY]
+                            [--captionConfidenceLevel CAPTIONCONFIDENCELEVEL]
+                            [--tagConfidenceLevel TAGCONFIDENCELEVEL]
+                            [--categoryConfidenceLevel CATEGORYCONFIDENCELEVEL]
+                            [--azureResizeWidth AZURERESIZEWIDTH]
+                            inputFiles [inputFiles ...]
 
-positional arguments:
-  inputFiles            Input file list
+    Add XMP metadata based on Microsoft® Azure® Computer Vision API.
 
-optional arguments:
-  -h, --help            show this help message and exit
-  --key [KEY]           Azure Computer Vision API key (default: None)
-  --captionConfidenceLevel CAPTIONCONFIDENCELEVEL
-                        Confidence level for adding caption) (default: 0.1)
-  --tagConfidenceLevel TAGCONFIDENCELEVEL
-                        Confidence level for adding tags (default: 0.1)
-  --categoryConfidenceLevel CATEGORYCONFIDENCELEVEL
-                        Confidence level for adding category (default: 0.0)
-  --azureResizeWidth AZURERESIZEWIDTH
-                        Temporarily resize to <azureResizeWidth> before
-                        uploading to Azure (default: 800)
-~~~~
+    positional arguments:
+    inputFiles            Input file list
+
+    optional arguments:
+    -h, --help            show this help message and exit
+    --key [KEY]           Azure Computer Vision API key (default: None)
+    --captionConfidenceLevel CAPTIONCONFIDENCELEVEL
+                            Confidence level for adding caption) (default: 0.1)
+    --tagConfidenceLevel TAGCONFIDENCELEVEL
+                            Confidence level for adding tags (default: 0.1)
+    --categoryConfidenceLevel CATEGORYCONFIDENCELEVEL
+                            Confidence level for adding category (default: 0.0)
+    --azureResizeWidth AZURERESIZEWIDTH
+                            Temporarily resize to <azureResizeWidth> before
+                            uploading to Azure (default: 800)
 
 ##Prerequisites
 1. Azure Computer Vision API Key (proprietary, subscription-based):
