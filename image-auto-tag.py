@@ -110,11 +110,14 @@ for v_idx, v_input_file in enumerate(args.inputFiles):
     xmp = xmpfile.get_xmp()
     
     # Set caption if response is above desired confidence level
-    if v_json_result['description']['captions'][0]['confidence'] >= p_caption_confidence_level:
-        xmp.delete_property(consts.XMP_NS_DC, u'description')
-        xmp.set_property(consts.XMP_NS_DC, u'description', v_json_result['description']['captions'][0]['text'] )
-        eprint("INFO: [%s] Appended caption '%s' (confidence: %.2f >= %.2f)" % (v_input_file.name,v_json_result['description']['captions'][0]['text'], v_json_result['description']['captions'][0]['confidence'],p_caption_confidence_level))
-    
+    try:
+        if v_json_result['description']['captions'][0]['confidence'] >= p_caption_confidence_level:
+            xmp.delete_property(consts.XMP_NS_DC, u'description')
+            xmp.set_property(consts.XMP_NS_DC, u'description', v_json_result['description']['captions'][0]['text'] )
+            eprint("INFO: [%s] Appended caption '%s' (confidence: %.2f >= %.2f)" % (v_input_file.name,v_json_result['description']['captions'][0]['text'], v_json_result['description']['captions'][0]['confidence'],p_caption_confidence_level))
+    except KeyError:
+        eprint("INFO: [%s] Caption not found... skipping" % v_input_file.name)
+
     # Set category if response is above desired confidence level
     try:
         for v_category in v_json_result['categories']:
