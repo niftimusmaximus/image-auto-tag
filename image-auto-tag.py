@@ -103,6 +103,7 @@ for v_idx, v_input_file in enumerate(args.inputFiles):
 
     # Decode the JSON output
     v_json_result=json.loads(response_data.decode("utf-8"))
+    #print(v_json_result)
 
     # Get existing image XMP data
     xmpfile = XMPFiles( file_path=v_input_file.name, open_forupdate=True )
@@ -115,18 +116,25 @@ for v_idx, v_input_file in enumerate(args.inputFiles):
         eprint("INFO: [%s] Appended caption '%s' (confidence: %.2f >= %.2f)" % (v_input_file.name,v_json_result['description']['captions'][0]['text'], v_json_result['description']['captions'][0]['confidence'],p_caption_confidence_level))
     
     # Set category if response is above desired confidence level
-    for v_category in v_json_result['categories']:
-        if v_category['score'] >= p_category_confidence_level:            
-            if not xmp.does_array_item_exist(consts.XMP_NS_Photoshop, u'SupplementalCategories', v_category['name']):
-                xmp.append_array_item(consts.XMP_NS_Photoshop, u'SupplementalCategories', v_category['name'],{'prop_array_is_ordered': True, 'prop_value_is_array': True})
-                eprint("INFO: [%s] Appended category '%s' (confidence: %.2f >= %.2f)" % (v_input_file.name,v_category['name'], v_category['score'],p_category_confidence_level))
-        
-    # Add tags if response for a given is above desired confidence level
-    for v_tag in v_json_result['tags']:
-        if (v_tag['confidence']>=p_tag_confidence_level):
-            eprint("INFO: [%s] Appending tag '%s' (confidence: %.2f >= %.2f)" % (v_input_file.name, v_tag['name'],v_tag['confidence'],p_tag_confidence_level))
-            if not xmp.does_array_item_exist(consts.XMP_NS_DC, u'subject', v_tag['name']):
-                xmp.append_array_item(consts.XMP_NS_DC, u'subject', v_tag['name'], {'prop_array_is_ordered': True, 'prop_value_is_array': True} )
+    try:
+        for v_category in v_json_result['categories']:
+            if v_category['score'] >= p_category_confidence_level:            
+                if not xmp.does_array_item_exist(consts.XMP_NS_Photoshop, u'SupplementalCategories', v_category['name']):
+                    xmp.append_array_item(consts.XMP_NS_Photoshop, u'SupplementalCategories', v_category['name'],{'prop_array_is_ordered': True, 'prop_value_is_array': True})
+                    eprint("INFO: [%s] Appended category '%s' (confidence: %.2f >= %.2f)" % (v_input_file.name,v_category['name'],v_category['score'],p_category_confidence_level))
+    except KeyError:
+        eprint("INFO: [%s] Category not found... skipping" % v_input_file.name)
+
+
+    # Add tags if response for a given is above desired confidence level    
+    try:
+        for v_tag in v_json_result['tags']:
+            if (v_tag['confidence']>=p_tag_confidence_level):
+                eprint("INFO: [%s] Appending tag '%s' (confidence: %.2f >= %.2f)" % (v_input_file.name, v_tag['name'],v_tag['confidence'],p_tag_confidence_level))
+                if not xmp.does_array_item_exist(consts.XMP_NS_DC, u'subject', v_tag['name']):
+                    xmp.append_array_item(consts.XMP_NS_DC, u'subject', v_tag['name'], {'prop_array_is_ordered': True, 'prop_value_is_array': True} )
+    except KeyError:
+        eprint("INFO: [%s] Tags not found... skipping" % v_input_file.name)
     
     # Write XMP metadata to file
     if xmpfile.can_put_xmp(xmp):       
