@@ -11,7 +11,7 @@ pip3 install Pillow
 exit
 
 git clone https://github.com/niftimusmaximus/image-auto-tag
-cd image-auto-tag.py
+cd image-auto-tag
 ./image-auto-tag.py --key XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX image.jpg
 
 ~~~~
